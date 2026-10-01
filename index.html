@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Japan Pathway Quiz</title>
+<title>Find Your Japan Pathway</title>
 <style>
   :root {
     --brand: #0f766e;
@@ -12,6 +12,8 @@
     --accent: #e0475b;
     --warn: #b45309;
     --warn-soft: #fef3c7;
+    --info: #1d4ed8;
+    --info-soft: #dbeafe;
     --text: #0f172a;
     --muted: #64748b;
     --line: #e2e8f0;
@@ -62,7 +64,6 @@
 
   .q-title { font-size: 26px; line-height: 1.25; font-weight: 750; margin-bottom: 8px; }
   .q-sub { color: var(--muted); font-size: 15px; line-height: 1.5; margin-bottom: 24px; }
-  .center { text-align: center; }
 
   .options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
   .option {
@@ -92,11 +93,12 @@
   .btn {
     display: block; width: 100%; padding: 16px; font: inherit; font-weight: 700; font-size: 16px;
     border-radius: var(--radius); border: none; cursor: pointer; transition: background .15s, opacity .15s;
+    text-align: center; text-decoration: none;
   }
   .btn.primary { background: var(--brand); color: #fff; }
   .btn.primary:hover { background: var(--brand-dark); }
   .btn.primary:disabled { opacity: .4; cursor: not-allowed; }
-  .btn.ghost { background: transparent; color: var(--muted); font-weight: 600; }
+  .btn.secondary { background: var(--card); color: var(--brand-dark); border: 2px solid var(--brand); margin-top: 10px; }
   .btn.big { padding: 18px; font-size: 17px; }
 
   /* ---------- Intro ---------- */
@@ -109,6 +111,8 @@
 
   /* ---------- Insight ---------- */
   .insight { text-align: center; }
+  .insight .notes, .insight .path, .insight .checklist { text-align: left; }
+  .big-emoji { font-size: 56px; margin: 8px 0 12px; }
   .ring { position: relative; width: 150px; height: 150px; margin: 8px auto 20px; }
   .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
   .ring circle { fill: none; stroke-width: 10; }
@@ -116,9 +120,20 @@
   .ring-fg { stroke: var(--brand); stroke-linecap: round; stroke-dasharray: 326.7; stroke-dashoffset: 326.7; transition: stroke-dashoffset 1.2s ease; }
   .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; }
   .ring-label small { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
-  .notes { list-style: none; text-align: left; display: flex; flex-direction: column; gap: 10px; margin: 8px 0 28px; }
+  .notes { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 8px 0 28px; }
   .notes li { display: flex; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 15px; line-height: 1.45; }
   .notes li span:first-child { font-size: 18px; }
+  .quote { background: var(--brand-soft); color: var(--brand-dark); border-radius: 12px; padding: 14px 16px; font-size: 15px; line-height: 1.5; margin-bottom: 20px; text-align: left; }
+
+  .path { list-style: none; counter-reset: path; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .path li { counter-increment: path; display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .path li::before {
+    content: counter(path); flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--brand); color: #fff; font-weight: 700; font-size: 14px; display: grid; place-items: center;
+  }
+  .path li:last-child::before { background: var(--accent); }
+  .path b { display: block; }
+  .path span { font-size: 13px; color: var(--muted); }
 
   .verdict { border-radius: 12px; padding: 14px 16px; font-size: 15px; line-height: 1.45; margin-bottom: 20px; text-align: left; }
   .verdict.ok { background: var(--brand-soft); color: var(--brand-dark); }
@@ -134,6 +149,17 @@
   .tl-date { font-size: 12px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: .08em; }
   .tl-text { font-weight: 600; margin-top: 2px; }
   .tl-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  .ready-meter { height: 10px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 4px 0 20px; }
+  .ready-meter div { height: 100%; background: var(--brand); border-radius: 99px; width: 0; transition: width 1s ease; }
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .checklist li { display: flex; gap: 12px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .status { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+  .status.ok { background: var(--brand-soft); color: var(--brand); }
+  .status.todo { background: var(--warn-soft); color: var(--warn); }
+  .status.info { background: var(--info-soft); color: var(--info); }
+  .checklist b { display: block; font-size: 15px; }
+  .checklist span.desc { font-size: 13px; color: var(--muted); line-height: 1.45; }
 
   /* ---------- Form ---------- */
   .field { display: block; margin-bottom: 16px; }
@@ -161,48 +187,20 @@
   .load-list li.done .dot { background: var(--brand); border-color: var(--brand); }
   .load-list li.done .dot::after { content: "✓"; }
 
-  /* ---------- Result + Paywall ---------- */
+  /* ---------- Result ---------- */
   .eyebrow { font-size: 12px; font-weight: 700; color: var(--brand); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 6px; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0 28px; }
   .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 10px; text-align: center; }
   .stat-val { display: block; font-size: 20px; font-weight: 800; color: var(--brand-dark); }
   .stat-lbl { font-size: 12px; color: var(--muted); }
-  .preview { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 18px; margin-bottom: 28px; }
-  .pp-item { padding: 14px 0; border-bottom: 1px solid var(--line); }
-  .pp-item:last-child { border-bottom: none; }
-  .pp-title { font-weight: 700; font-size: 15px; display: flex; justify-content: space-between; gap: 8px; }
-  .pp-body { font-size: 14px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
-  .pp-item.locked .pp-body { filter: blur(5px); user-select: none; }
-  .lock { font-size: 13px; }
-
-  h2.section { font-size: 20px; margin-bottom: 14px; }
-  .plans { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-  .plan {
-    position: relative; text-align: left; font: inherit; color: inherit; cursor: pointer;
-    background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 18px;
-  }
-  .plan.selected { border-color: var(--brand); background: var(--brand-soft); }
-  .plan-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-  .plan-name { font-weight: 700; font-size: 16px; }
-  .plan-price { font-weight: 800; font-size: 22px; }
-  .plan ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--muted); }
-  .plan li::before { content: "✓  "; color: var(--brand); font-weight: 700; }
-  .badge { position: absolute; top: -11px; right: 16px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; letter-spacing: .05em; text-transform: uppercase; }
+  h2.section { font-size: 19px; margin: 8px 0 12px; }
+  .cta-box { background: var(--brand-dark); color: #fff; border-radius: 18px; padding: 24px; margin-top: 8px; }
+  .cta-box h2 { font-size: 22px; margin-bottom: 6px; }
+  .cta-box p { color: #cdeae6; font-size: 15px; line-height: 1.5; margin-bottom: 18px; }
+  .cta-box .btn.primary { background: #fff; color: var(--brand-dark); }
+  .cta-box .btn.primary:hover { background: var(--brand-soft); }
+  .cta-box .btn.secondary { background: transparent; color: #fff; border-color: rgba(255,255,255,.5); }
   .fine { text-align: center; font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.5; }
-
-  /* ---------- Checkout modal ---------- */
-  .backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, .5); display: grid; place-items: end center; z-index: 10; animation: fade .2s ease; }
-  @media (min-width: 640px) { .backdrop { place-items: center; } }
-  @keyframes fade { from { opacity: 0; } }
-  .modal { width: 100%; max-width: 440px; background: var(--card); border-radius: 20px 20px 0 0; padding: 24px; animation: up .25s ease; }
-  @media (min-width: 640px) { .modal { border-radius: 20px; } }
-  @keyframes up { from { transform: translateY(40px); } }
-  .modal h3 { font-size: 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-  .summary { display: flex; justify-content: space-between; padding: 14px 16px; background: var(--bg); border-radius: 12px; margin-bottom: 18px; font-size: 15px; }
-  .methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-  .method { font: inherit; font-weight: 600; font-size: 14px; padding: 14px 8px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); cursor: pointer; }
-  .method.selected { border-color: var(--brand); background: var(--brand-soft); }
-  .demo-tag { display: inline-block; font-size: 11px; font-weight: 700; color: var(--warn); background: var(--warn-soft); padding: 3px 8px; border-radius: 6px; }
 
   footer { text-align: center; font-size: 12px; color: var(--muted); padding: 16px; }
   footer button { background: none; border: none; color: var(--muted); text-decoration: underline; cursor: pointer; font: inherit; }
@@ -233,27 +231,12 @@
 
 <script>
 /* =========================================================
-   CONFIG: edit brand, prices and plans here
+   CONFIG: edit brand and contact links here
    ========================================================= */
 const CONFIG = {
   brand: "Saiko Gakushu",
   tagline: "Study in Japan",
-  currency: "₱",
-  plans: [
-    {
-      id: "pathway",
-      name: "Japan Pathway Plan",
-      price: 499,
-      features: ["Your full personalized timeline", "Document checklist for your situation", "Partner school matches"],
-    },
-    {
-      id: "expert",
-      name: "Pathway + Expert Review",
-      price: 1499,
-      popular: true,
-      features: ["Everything in Japan Pathway Plan", "1-on-1 call with a counselor", "Document review before you apply", "Priority slot for your target intake"],
-    },
-  ],
+  messengerUrl: "", // e.g. "https://m.me/yourpage". Shows a "Message us" button when set
 };
 
 /* =========================================================
@@ -279,7 +262,7 @@ const NOTES = {
     somecollege: ["✅", "Your schooling likely meets the 12-year requirement."],
     k12:         ["✅", "As a K-12 graduate, you meet the 12-year schooling requirement."],
     vocational:  ["📋", "Your TESDA / vocational training may count toward the 12-year requirement. We'll check it for you."],
-    oldhs:       ["📋", "Since you finished high school before K-12, you may need extra college or TESDA units to reach 12 years. We'll show you the fastest way."],
+    oldhs:       ["📋", "Since you finished high school before K-12, you may need extra units to reach 12 years. We'll show you the fastest way."],
   },
   japanese: {
     none:   ["🌱", "Starting from zero is normal. Most of our students did too."],
@@ -287,12 +270,34 @@ const NOTES = {
     n5:     ["✅", "You already have the Japanese level most schools ask for."],
     n4:     ["🏅", "Your Japanese is above what schools require. Great advantage!"],
   },
+  status: {
+    student:  ["📖", "You're already in study mode, which makes learning Japanese easier."],
+    fulltime: ["💼", "Working full-time? Many of our students prepared on evenings and weekends."],
+    parttime: ["🕒", "Part-time work leaves you room to prepare at a steady pace."],
+    none:     ["⏳", "Having free time now means you could prepare faster than most."],
+  },
 };
 
-const STUDY_HOURS_TO_N5 = { none: 200, basics: 130, n5: 0, n4: 0 };
-const HOURS_PER_DAY = { lt1: 0.75, "1-2": 1.5, "2-4": 3, "4+": 4.5 };
-const STUDY_DAYS_PER_MONTH = 26;
-const APPLY_LEAD_MONTHS = 5; // COE applications usually close ~5 months before intake
+const MOTIVATION = {
+  career:  ["📈", "Japan is hiring", "Japan has a serious worker shortage and has opened more visas for foreign workers. Language school is a common first step in."],
+  family:  ["💪", "Helping your family is a powerful reason", "Many students study, work part-time, then move into full-time jobs after graduating, and that's how they support family back home."],
+  culture: ["🎌", "Living it beats watching it", "As a student you'll live the culture every day: the food, the seasons, the people. Not just through anime and videos."],
+  abroad:  ["🌏", "Japan is a great first country abroad", "It's safe, only 4–5 hours from Manila, and home to a large Filipino community."],
+};
+
+const VISION_TEXT = {
+  japanese: "speaking Japanese confidently",
+  money: "sending money home to your family",
+  independent: "living independently in a new country",
+  career: "building a career you're proud of",
+};
+
+const GOAL_PATH = {
+  "study-work": ["Keep growing in Japan", "Extend your studies or move into full-time work"],
+  career: ["Start your career in Japan", "Get hired, or qualify for a work / Specified Skilled Worker visa"],
+  college: ["Go to college in Japan", "Continue to a senmon gakko (vocational college) or university"],
+  unsure: ["Choose your path", "Decide with our guidance once you're in Japan"],
+};
 
 const GOAL_NOTES = {
   "study-work": "Study + part-time work (up to 28 hrs/week)",
@@ -301,14 +306,37 @@ const GOAL_NOTES = {
   unsure: "Explore your options once you're there",
 };
 
-const SPONSOR_LABEL = { self: "self", parents: "parent", ofw: "OFW-relative", japan: "Japan-relative", unsure: "your" };
-const WORRY_LABEL = { cost: "total cost", language: "learning Japanese", visa: "visa & documents", job: "part-time jobs", family: "being away from family" };
+const WORRY_ANSWERS = {
+  cost:     ["💴", "The total cost", "Tuition, dorm and living costs depend on the school and city. We'll give you a full breakdown, including installment options."],
+  language: ["🈶", "Learning Japanese", "You'll study before you leave, then attend Japanese classes every weekday at school in Japan. You improve fast when you live in it."],
+  visa:     ["📄", "Visa & documents", "We prepare your COE documents with you, and your school files them with Japanese Immigration."],
+  job:      ["🏪", "Finding a part-time job", "Student visa holders can work up to 28 hours a week with permission. Many work in convenience stores, restaurants and hotels."],
+  family:   ["🏠", "Being away from family", "Most students video call home every day, and you'll meet other Filipino students at school."],
+};
+
+const SPONSOR_NAME = { parents: "your parents", ofw: "your relative abroad", japan: "your relative in Japan" };
+const HOURS_LABEL = { lt1: "under 1 hour", "1-2": "1–2 hours", "2-4": "2–4 hours", "4+": "4+ hours" };
+const JP_FROM = { none: "zero", basics: "the basics", n5: "N5", n4: "N4+" };
+
+const STUDY_HOURS_TO_N5 = { none: 200, basics: 130, n5: 0, n4: 0 };
+const HOURS_PER_DAY = { lt1: 0.75, "1-2": 1.5, "2-4": 3, "4+": 4.5 };
+const STUDY_DAYS_PER_MONTH = 26;
+const APPLY_LEAD_MONTHS = 5; // COE applications usually close ~5 months before intake
 
 /* =========================================================
-   Steps: the funnel, in order
+   Steps: the funnel, in order. `when` = only show if true.
    ========================================================= */
 const STEPS = [
   { type: "intro" },
+  {
+    type: "question", id: "status", title: "First, what are you doing right now?",
+    options: [
+      { v: "student", label: "I'm a student", icon: "📖" },
+      { v: "fulltime", label: "Working full-time", icon: "💼" },
+      { v: "parttime", label: "Working part-time", icon: "🕒" },
+      { v: "none", label: "Not working at the moment", icon: "⏳" },
+    ],
+  },
   {
     type: "question", id: "age", title: "How old are you?",
     options: [
@@ -330,6 +358,16 @@ const STEPS = [
     ],
   },
   {
+    type: "question", id: "willing", when: a => a.education === "oldhs",
+    title: "Would you be willing to take extra units to complete 12 years of schooling?",
+    subtitle: "Many applicants do this through a short college or TESDA program.",
+    options: [
+      { v: "yes", label: "Yes, I'm ready to do it", icon: "💪" },
+      { v: "maybe", label: "Maybe, depending on time and cost", icon: "🤔" },
+      { v: "info", label: "I'd like to know my options first", icon: "🔎" },
+    ],
+  },
+  {
     type: "question", id: "japanese", title: "How much Japanese do you know?",
     options: [
       { v: "none", label: "None yet", sub: "Starting from zero", icon: "🌱" },
@@ -340,21 +378,41 @@ const STEPS = [
   },
   { type: "insight", render: insightFit },
   {
+    type: "question", id: "motivation", title: "What's drawing you to Japan?",
+    options: [
+      { v: "career", label: "A better career and salary", icon: "📈" },
+      { v: "family", label: "Helping my family", icon: "👨‍👩‍👧" },
+      { v: "culture", label: "Japanese culture and lifestyle", icon: "🎌" },
+      { v: "abroad", label: "The experience of living abroad", icon: "🌏" },
+    ],
+  },
+  {
+    type: "question", id: "vision", title: "Picture yourself one year after arriving in Japan. What would make you proudest?",
+    options: [
+      { v: "japanese", label: "Speaking Japanese confidently", icon: "🗣️" },
+      { v: "money", label: "Sending money home to my family", icon: "💌" },
+      { v: "independent", label: "Living independently in a new country", icon: "🏙️" },
+      { v: "career", label: "Building a career I'm proud of", icon: "🏆" },
+    ],
+  },
+  {
+    type: "question", id: "goal", title: "And after language school, what's next for you?",
+    options: [
+      { v: "career", label: "Work full-time in Japan", sub: "e.g. Specified Skilled Worker visa", icon: "💼" },
+      { v: "college", label: "Continue to a Japanese college or university", icon: "🏯" },
+      { v: "study-work", label: "Keep studying and working part-time", icon: "🏪" },
+      { v: "unsure", label: "Not sure yet", icon: "🤔" },
+    ],
+  },
+  { type: "insight", render: insightMotivation },
+  {
     type: "question", id: "hours", title: "How many hours a day can you spend learning Japanese?",
+    subtitle: a => a.status === "fulltime" ? "Be realistic. Even 1 hour after work adds up fast." : "",
     options: [
       { v: "lt1", label: "Less than 1 hour", icon: "⏱️" },
       { v: "1-2", label: "1–2 hours", icon: "🕐" },
       { v: "2-4", label: "2–4 hours", icon: "🕑" },
       { v: "4+", label: "4+ hours", sub: "I can study full-time", icon: "🔥" },
-    ],
-  },
-  {
-    type: "question", id: "goal", title: "What's your main goal in Japan?",
-    options: [
-      { v: "study-work", label: "Study Japanese & work part-time", icon: "🏪" },
-      { v: "career", label: "Build a long-term career in Japan", sub: "e.g. Specified Skilled Worker after school", icon: "💼" },
-      { v: "college", label: "Continue to a Japanese college or university", icon: "🏯" },
-      { v: "unsure", label: "Not sure yet", icon: "🤔" },
     ],
   },
   {
@@ -367,6 +425,24 @@ const STEPS = [
   },
   { type: "insight", render: insightTimeline },
   {
+    type: "question", id: "passport", title: "Do you have a valid Philippine passport?",
+    options: [
+      { v: "yes", label: "Yes, it's valid", icon: "🛂" },
+      { v: "expired", label: "Yes, but it's expired or expiring soon", icon: "⌛" },
+      { v: "processing", label: "I've applied and I'm waiting for it", icon: "📬" },
+      { v: "none", label: "Not yet", icon: "➕" },
+    ],
+  },
+  {
+    type: "question", id: "tried", title: "Have you tried to go to Japan before?",
+    options: [
+      { v: "first", label: "No, this is my first time", icon: "✨" },
+      { v: "refused", label: "I applied before, but it didn't push through", icon: "🔁" },
+      { v: "tourist", label: "I've visited Japan as a tourist", icon: "📸" },
+      { v: "lived", label: "I've lived or worked in Japan before", icon: "🗾" },
+    ],
+  },
+  {
     type: "question", id: "sponsor", title: "Who will support your studies financially?",
     subtitle: "Immigration asks for proof that someone can cover tuition and living costs.",
     options: [
@@ -378,48 +454,70 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "worries", multi: true, title: "What worries you most?",
-    subtitle: "Pick all that apply. We'll cover these in your plan.",
+    type: "question", id: "funds", when: a => a.sponsor && a.sponsor !== "unsure",
+    title: a => a.sponsor === "self"
+      ? "Do you have savings and a steady income you can show?"
+      : `${a.sponsor === "parents" ? "Do" : "Does"} ${SPONSOR_NAME[a.sponsor]} have savings and a steady income they can show?`,
+    subtitle: "Bank certificates and proof of income are key parts of the application.",
     options: [
-      { v: "cost", label: "The total cost", icon: "💴" },
-      { v: "language", label: "Learning Japanese", icon: "🈶" },
-      { v: "visa", label: "Visa & documents", icon: "📄" },
-      { v: "job", label: "Finding a part-time job", icon: "🏪" },
-      { v: "family", label: "Being away from family", icon: "🏠" },
+      { v: "both", label: "Yes, both", icon: "✅" },
+      { v: "income", label: "Steady income, but small savings", icon: "💼" },
+      { v: "savings", label: "Savings, but no steady income", icon: "🏦" },
+      { v: "unsure", label: "Not sure", icon: "🤔" },
+    ],
+  },
+  { type: "insight", render: insightReadiness },
+  {
+    type: "question", id: "worries", multi: true, title: "What worries you most?",
+    subtitle: "Pick all that apply. We'll answer these in your plan.",
+    options: Object.entries(WORRY_ANSWERS).map(([v, [icon, label]]) => ({ v, label, icon })),
+  },
+  {
+    type: "question", id: "commitment",
+    title: a => `If we find a school that fits you, how soon could you start preparing for ${targetIntake(timeline()).label}?`,
+    options: [
+      { v: "now", label: "Right away", sub: "I'm ready to start", icon: "🚀" },
+      { v: "1mo", label: "Within a month", icon: "📅" },
+      { v: "3mo", label: "Within 3 months", icon: "🗓️" },
+      { v: "exploring", label: "I'm just exploring for now", icon: "👀" },
     ],
   },
   { type: "form" },
   { type: "loading" },
   { type: "result" },
+  { type: "success" },
 ];
 
 const PROGRESS_TYPES = ["question", "form"];
-const TOTAL_PROGRESS = STEPS.filter(s => PROGRESS_TYPES.includes(s.type)).length;
 
 /* =========================================================
    State
    ========================================================= */
-const STORAGE_KEY = "jp-quiz-funnel-v1";
+const STORAGE_KEY = "jp-pathway-v2";
 const $ = (sel, el = document) => el.querySelector(sel);
 const screen = $("#screen");
 let state = loadState() || freshState();
 let advancing = false;
 let loadingTimers = [];
 
-function freshState() { return { i: 0, answers: {}, lead: {}, plan: CONFIG.plans.find(p => p.popular)?.id || CONFIG.plans[0].id }; }
+function freshState() { return { i: 0, answers: {}, lead: {} }; }
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; } }
 function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function isActive(step) { return !step.when || step.when(state.answers); }
+function resolve(v) { return typeof v === "function" ? v(state.answers) : v; }
 
 /* =========================================================
    Navigation
    ========================================================= */
 function next() {
-  if (state.i < STEPS.length - 1) { state.i++; render(); }
+  let j = state.i + 1;
+  while (j < STEPS.length && !isActive(STEPS[j])) j++;
+  if (j < STEPS.length) { state.i = j; render(); }
 }
 function back() {
-  if (state.i === 0) return;
-  state.i--;
-  while (state.i > 0 && STEPS[state.i].type === "loading") state.i--;
+  let j = state.i - 1;
+  while (j > 0 && (!isActive(STEPS[j]) || STEPS[j].type === "loading")) j--;
+  state.i = Math.max(j, 0);
   render();
 }
 function restart() {
@@ -443,11 +541,12 @@ function render() {
 }
 
 function updateChrome(step) {
-  const done = STEPS.slice(0, state.i + 1).filter(s => PROGRESS_TYPES.includes(s.type)).length;
-  const showProgress = !["intro", "result", "success"].includes(step.type);
-  $("#progressWrap").hidden = !showProgress;
-  $("#progressFill").style.width = `${Math.round(done / TOTAL_PROGRESS * 100)}%`;
-  $("#stepCount").textContent = PROGRESS_TYPES.includes(step.type) ? `${done}/${TOTAL_PROGRESS}` : "";
+  const counts = s => isActive(s) && PROGRESS_TYPES.includes(s.type);
+  const total = STEPS.filter(counts).length;
+  const done = STEPS.slice(0, state.i + 1).filter(counts).length;
+  $("#progressWrap").hidden = ["intro", "result", "success"].includes(step.type);
+  $("#progressFill").style.width = `${Math.round(done / total * 100)}%`;
+  $("#stepCount").textContent = PROGRESS_TYPES.includes(step.type) ? `${done}/${total}` : "";
   $("#back").hidden = ["intro", "loading", "success"].includes(step.type);
 }
 
@@ -462,20 +561,21 @@ const RENDERERS = {
         <h1>Is studying in Japan right for you?</h1>
         <p>Answer a few quick questions and get your personalized Japan pathway: your fit, your timeline, and your next steps.</p>
         <div class="chips">
-          <span class="chip">⏱ Takes 2 minutes</span>
+          <span class="chip">⏱ Takes 3 minutes</span>
           <span class="chip">🎓 Language school route</span>
           <span class="chip">📄 Visa guidance</span>
         </div>
-        <button class="btn primary big" id="next">Start the quiz</button>
+        <button class="btn primary big" id="next">Find my pathway</button>
       </div>`;
     $("#next").addEventListener("click", next);
   },
 
   question(step) {
-    const opts = typeof step.options === "function" ? step.options() : step.options;
+    const opts = resolve(step.options);
+    const subtitle = resolve(step.subtitle);
     screen.innerHTML = `
-      <h1 class="q-title">${step.title}</h1>
-      ${step.subtitle ? `<p class="q-sub">${step.subtitle}</p>` : `<div style="height:16px"></div>`}
+      <h1 class="q-title">${resolve(step.title)}</h1>
+      ${subtitle ? `<p class="q-sub">${subtitle}</p>` : `<div style="height:16px"></div>`}
       <div class="options">
         ${opts.map((o, idx) => `
           <button class="option ${isSelected(step, o.v) ? "selected" : ""}" data-v="${o.v}">
@@ -497,13 +597,16 @@ const RENDERERS = {
     screen.innerHTML = `${step.render()}<button class="btn primary" id="next">Continue</button>`;
     $("#next").addEventListener("click", next);
     animateRing();
+    const meter = $(".ready-meter div", screen);
+    if (meter) requestAnimationFrame(() => { meter.style.width = meter.dataset.w; });
   },
 
   form() {
     const l = state.lead;
+    const eager = ["now", "1mo"].includes(state.answers.commitment);
     screen.innerHTML = `
-      <h1 class="q-title">Your plan is almost ready!</h1>
-      <p class="q-sub">Where should we send it? We'll save your results so you can come back anytime.</p>
+      <h1 class="q-title">${eager ? "Love the energy! Let's get you started 🚀" : "Your plan is ready!"}</h1>
+      <p class="q-sub">Where can we reach you? We'll save your results so you can come back anytime.</p>
       <label class="field" id="f-name"><span>Full name</span>
         <input id="name" autocomplete="name" value="${escapeHtml(l.name || "")}" placeholder="Juan Dela Cruz">
         <div class="err">Please enter your name.</div></label>
@@ -515,12 +618,12 @@ const RENDERERS = {
         <div class="err">Please enter a valid PH mobile number (09XX XXX XXXX).</div></label>
       <label class="consent" id="f-consent"><input type="checkbox" id="consent" ${l.consent ? "checked" : ""}>
         <span>I agree to the processing of my personal data by ${CONFIG.brand} in accordance with the Data Privacy Act of 2012.</span></label>
-      <button class="btn primary" id="next">See my results</button>`;
+      <button class="btn primary" id="next">See my plan</button>`;
     $("#next").addEventListener("click", submitForm);
   },
 
   loading() {
-    const items = ["Analyzing your profile", "Checking school requirements", "Building your timeline", "Preparing your document checklist"];
+    const items = ["Analyzing your profile", "Checking school requirements", "Building your timeline", "Preparing your next steps"];
     screen.innerHTML = `
       <div class="loading">
         <div class="spinner"></div>
@@ -537,22 +640,14 @@ const RENDERERS = {
     const score = fitScore(["age", "education", "japanese", "hours", "sponsor"]);
     const t = timeline();
     const target = targetIntake(t);
-    const firstName = escapeHtml((state.lead.name || "").trim().split(/\s+/)[0] || "Hi");
-    const worries = (a.worries || []).map(w => WORRY_LABEL[w]).filter(Boolean);
-    const plan = CONFIG.plans.find(p => p.id === state.plan) || CONFIG.plans[0];
-
-    const locked = [
-      ["📄 Document checklist", `Every document you need as a ${SPONSOR_LABEL[a.sponsor] || "your"}-sponsored applicant, with apostille and translation steps.`],
-      ["🏫 Partner schools matched to you", "Schools in Tokyo, Osaka and Fukuoka that accept your profile, with tuition and intake deadlines."],
-      ["💴 Full cost breakdown", "Tuition, dorm, flights and visa fees, plus a month-by-month payment schedule."],
-    ];
-    if (a.education === "oldhs") locked.unshift(["🎓 Completing your 12 years of schooling", "The fastest college or TESDA options to qualify, and how long each takes."]);
-    if (worries.length) locked.push([`💡 Your plan for: ${worries.join(", ")}`, "Practical answers to your biggest concerns, from students who've been there."]);
+    const firstName = escapeHtml(firstNameOf(state.lead.name) || "Hi");
+    const worries = (a.worries || []).map(w => WORRY_ANSWERS[w]).filter(Boolean);
+    const eager = ["now", "1mo"].includes(a.commitment);
 
     screen.innerHTML = `
       <p class="eyebrow">Your Japan Pathway</p>
       <h1 class="q-title">${firstName}, you're a ${score >= 80 ? "great" : score >= 60 ? "good" : "possible"} fit for Japan!</h1>
-      <p class="q-sub" style="margin-bottom:0">Here's a preview of your personalized plan.</p>
+      <p class="q-sub" style="margin-bottom:0">Here's your personalized plan, built from your answers.</p>
 
       <div class="stats">
         <div class="stat"><span class="stat-val">${score}%</span><span class="stat-lbl">Program match</span></div>
@@ -560,48 +655,36 @@ const RENDERERS = {
         <div class="stat"><span class="stat-val">${t.studyMonths ? `${t.studyMonths} mo` : "Ready"}</span><span class="stat-lbl">To N5 level</span></div>
       </div>
 
-      <div class="preview">
-        <div class="pp-item">
-          <div class="pp-title">✅ Your timeline</div>
-          <div class="pp-body">${t.studyMonths ? `Reach N5 by <b>${monthYear(t.ready)}</b>, apply` : "Apply"} by <b>${monthYear(addMonths(target.date, -APPLY_LEAD_MONTHS))}</b>, fly to Japan in <b>${target.label}</b>. After school: ${GOAL_NOTES[a.goal] || GOAL_NOTES.unsure}.</div>
-        </div>
-        ${locked.map(([title, body]) => `
-          <div class="pp-item locked">
-            <div class="pp-title"><span>${title}</span><span class="lock">🔒</span></div>
-            <div class="pp-body">${body}</div>
-          </div>`).join("")}
-      </div>
+      <h2 class="section">🗓️ Your timeline</h2>
+      ${timelineHtml(t, target)}
 
-      <h2 class="section">Unlock your full plan</h2>
-      <div class="plans">
-        ${CONFIG.plans.map(p => `
-          <button class="plan ${p.id === plan.id ? "selected" : ""}" data-id="${p.id}">
-            ${p.popular ? `<span class="badge">Most popular</span>` : ""}
-            <div class="plan-top"><span class="plan-name">${p.name}</span><span class="plan-price">${money(p.price)}</span></div>
-            <ul>${p.features.map(f => `<li>${f}</li>`).join("")}</ul>
-          </button>`).join("")}
-      </div>
-      <button class="btn primary big" id="next">Get my plan for ${money(plan.price)}</button>
-      <p class="fine">One-time payment · GCash, Maya or card</p>`;
+      <h2 class="section">✅ Your readiness checklist</h2>
+      ${checklistHtml(readinessItems())}
 
-    screen.querySelectorAll(".plan").forEach(btn => btn.addEventListener("click", () => {
-      state.plan = btn.dataset.id;
-      saveState();
-      const p = CONFIG.plans.find(x => x.id === state.plan);
-      screen.querySelectorAll(".plan").forEach(b => b.classList.toggle("selected", b === btn));
-      $("#next").textContent = `Get my plan for ${money(p.price)}`;
-    }));
-    $("#next").addEventListener("click", openCheckout);
+      <h2 class="section">👣 Your next steps</h2>
+      <ol class="path">${nextSteps(t, target).map(([title, sub]) => `<li><div><b>${title}</b><span>${sub}</span></div></li>`).join("")}</ol>
+
+      ${worries.length ? `
+        <h2 class="section">💬 About your worries</h2>
+        <ul class="notes">${worries.map(([icon, label, text]) => `<li><span>${icon}</span><span><b>${label}.</b> ${text}</span></li>`).join("")}</ul>` : ""}
+
+      <div class="cta-box">
+        <h2>${eager ? `Let's lock in your ${target.label} plan` : "Have questions? Let's talk, no pressure"}</h2>
+        <p>Book a free consultation with a ${CONFIG.brand} counselor. We'll go through your plan, match you with schools, and answer everything you're unsure about.</p>
+        <button class="btn primary big" id="next">Book my free consultation</button>
+        ${CONFIG.messengerUrl ? `<a class="btn secondary" href="${CONFIG.messengerUrl}" target="_blank" rel="noopener">Message us on Messenger</a>` : ""}
+      </div>`;
+    $("#next").addEventListener("click", next);
   },
 
   success() {
-    const plan = CONFIG.plans.find(p => p.id === state.plan);
     screen.innerHTML = `
       <div class="hero">
         <div class="hero-emoji">🎉</div>
-        <h1>You're all set, ${escapeHtml((state.lead.name || "").split(/\s+/)[0])}!</h1>
-        <p>Your <b>${plan.name}</b> is on its way to <b>${escapeHtml(state.lead.email || "")}</b>. A ${CONFIG.brand} counselor will message you at <b>${escapeHtml(state.lead.mobile || "")}</b> within 24 hours.</p>
-        <p class="fine"><span class="demo-tag">DEMO</span> No real payment was made.</p>
+        <h1>You're all set, ${escapeHtml(firstNameOf(state.lead.name))}!</h1>
+        <p>A ${CONFIG.brand} counselor will contact you at <b>${escapeHtml(state.lead.mobile || "")}</b> to schedule your free consultation.</p>
+        <p class="fine">Your results are saved on this device, so you can come back to them anytime.</p>
+        ${CONFIG.messengerUrl ? `<a class="btn primary" href="${CONFIG.messengerUrl}" target="_blank" rel="noopener">Message us on Messenger</a>` : ""}
       </div>`;
   },
 };
@@ -649,40 +732,6 @@ function submitForm() {
   if (Object.values(checks).every(Boolean)) next();
 }
 
-function openCheckout() {
-  const plan = CONFIG.plans.find(p => p.id === state.plan);
-  const wrap = document.createElement("div");
-  wrap.className = "backdrop";
-  wrap.innerHTML = `
-    <div class="modal" role="dialog" aria-modal="true">
-      <h3>Checkout <span class="demo-tag">DEMO</span></h3>
-      <div class="summary"><span>${plan.name}</span><b>${money(plan.price)}</b></div>
-      <p style="font-size:14px;font-weight:600;margin-bottom:10px">Pay with</p>
-      <div class="methods">
-        ${["GCash", "Maya", "Card"].map((m, idx) => `<button class="method ${idx === 0 ? "selected" : ""}">${m}</button>`).join("")}
-      </div>
-      <button class="btn primary" id="pay">Pay ${money(plan.price)}</button>
-      <button class="btn ghost" id="cancel">Cancel</button>
-      <p class="fine">Demo only. No real payment is processed.</p>
-    </div>`;
-  document.body.appendChild(wrap);
-  const close = () => wrap.remove();
-  wrap.addEventListener("click", e => { if (e.target === wrap) close(); });
-  $("#cancel", wrap).addEventListener("click", close);
-  wrap.querySelectorAll(".method").forEach(b => b.addEventListener("click", () =>
-    wrap.querySelectorAll(".method").forEach(x => x.classList.toggle("selected", x === b))));
-  $("#pay", wrap).addEventListener("click", e => {
-    e.target.disabled = true;
-    e.target.textContent = "Processing…";
-    setTimeout(() => {
-      close();
-      updateChrome({ type: "success" });
-      screen.classList.remove("enter"); void screen.offsetWidth; screen.classList.add("enter");
-      RENDERERS.success();
-    }, 1500);
-  });
-}
-
 /* =========================================================
    Insight screens
    ========================================================= */
@@ -690,13 +739,32 @@ function insightFit() {
   const a = state.answers;
   const pct = fitScore(["age", "education", "japanese"]);
   const headline = pct >= 80 ? "You're a great fit! 🎉" : pct >= 60 ? "You're a good fit! 👍" : "It's possible, with the right plan 💪";
-  const notes = [NOTES.age[a.age], NOTES.education[a.education], NOTES.japanese[a.japanese]].filter(Boolean);
+  const notes = [NOTES.age[a.age], NOTES.education[a.education], NOTES.japanese[a.japanese], NOTES.status[a.status]].filter(Boolean);
+  if (a.education === "oldhs" && a.willing === "yes") notes[1] = ["💪", "You're ready to complete your 12 years of schooling. That's the right mindset, and we'll show you the fastest option."];
   return `
     <div class="insight">
       ${ringHtml(pct)}
       <h1 class="q-title">${headline}</h1>
       <p class="q-sub">Based on your answers, here's how you match ${CONFIG.brand}'s Japan study program.</p>
       <ul class="notes">${notes.map(([icon, text]) => `<li><span>${icon}</span><span>${text}</span></li>`).join("")}</ul>
+    </div>`;
+}
+
+function insightMotivation() {
+  const a = state.answers;
+  const [emoji, headline, text] = MOTIVATION[a.motivation] || MOTIVATION.abroad;
+  const [goalTitle, goalSub] = GOAL_PATH[a.goal] || GOAL_PATH.unsure;
+  return `
+    <div class="insight">
+      <div class="big-emoji">${emoji}</div>
+      <h1 class="q-title">${headline}</h1>
+      <p class="q-sub">${text}</p>
+      ${a.vision ? `<div class="quote">You said you'd be proudest of <b>${VISION_TEXT[a.vision]}</b>. Here's how you get there:</div>` : ""}
+      <ol class="path">
+        <li><div><b>Prepare in the Philippines</b><span>Learn Japanese and get your documents ready, with our help</span></div></li>
+        <li><div><b>Language school in Japan</b><span>1–2 years of daily classes, plus part-time work</span></div></li>
+        <li><div><b>${goalTitle}</b><span>${goalSub}</span></div></li>
+      </ol>
     </div>`;
 }
 
@@ -712,12 +780,86 @@ function insightTimeline() {
   } else {
     verdict = ["warn", `<b>${labelFor(a.intake)}</b> is tight. We recommend <b>${t.earliest.label}</b> so your application is strong.`];
   }
-  const hoursLabel = { lt1: "under 1 hour", "1-2": "1–2 hours", "2-4": "2–4 hours", "4+": "4+ hours" }[a.hours];
-
   return `
     <h1 class="q-title">Here's your estimated timeline 🗓️</h1>
-    <p class="q-sub">Studying ${hoursLabel} a day, starting from ${{ none: "zero", basics: "the basics", n5: "N5", n4: "N4+" }[a.japanese]}.</p>
+    <p class="q-sub">Studying ${HOURS_LABEL[a.hours]} a day, starting from ${JP_FROM[a.japanese]}.</p>
     <div class="verdict ${verdict[0]}">${verdict[1]}</div>
+    ${timelineHtml(t, target)}`;
+}
+
+function insightReadiness() {
+  const items = readinessItems();
+  const ready = items.filter(([s]) => s === "ok").length;
+  const pct = Math.round(ready / items.length * 100);
+  const headline = ready === items.length ? "You're fully ready to apply! 🎉"
+    : ready >= items.length / 2 ? "You're closer than you think 💪"
+    : "You've got a clear path forward 🧭";
+  return `
+    <div class="insight">
+      <h1 class="q-title">${headline}</h1>
+      <p class="q-sub">You're <b>${ready} of ${items.length}</b> steps ready. Here's what's done and what's next:</p>
+      <div class="ready-meter"><div data-w="${Math.max(pct, 4)}%"></div></div>
+      ${checklistHtml(items)}
+    </div>`;
+}
+
+/* =========================================================
+   Plan building blocks
+   ========================================================= */
+function readinessItems() {
+  const a = state.answers;
+  const t = timeline();
+  const items = [];
+
+  if (a.education === "oldhs") {
+    items.push(["todo", "Complete 12 years of schooling", a.willing === "yes"
+      ? "You're ready to take extra units. We'll find the fastest option."
+      : "We'll show you the fastest college or TESDA options."]);
+  } else if (a.education === "vocational") {
+    items.push(["info", "Schooling requirement", "We'll check whether your TESDA units count toward 12 years."]);
+  } else {
+    items.push(["ok", "Schooling requirement met", "You have the 12 years of schooling schools ask for."]);
+  }
+
+  if (["n5", "n4"].includes(a.japanese)) items.push(["ok", "Japanese level met", "You're at the level schools ask for."]);
+  else items.push(["todo", "Reach N5 level", `About ${t.studyMonths} months at your pace, by ${monthYear(t.ready)}.`]);
+
+  items.push({
+    yes: ["ok", "Valid passport", "One less thing to worry about."],
+    expired: ["todo", "Renew your passport", "DFA appointment slots can fill up, so book your renewal early."],
+    processing: ["info", "Passport in progress", "Make sure it arrives before you submit your application."],
+    none: ["todo", "Apply for a passport", "Book a DFA appointment soon. You'll need it for your application."],
+  }[a.passport] || ["todo", "Passport", "You'll need a valid passport for your application."]);
+
+  if (a.sponsor === "unsure" || !a.sponsor) {
+    items.push(["todo", "Choose a financial sponsor", "Immigration needs proof that someone can cover your costs. We'll help you decide."]);
+  } else if (a.funds === "both") {
+    items.push(["ok", "Strong financial sponsor", "Savings plus steady income is what Immigration looks for."]);
+  } else {
+    items.push(["todo", "Strengthen your financial proof", "We'll show you the savings target and documents your sponsor needs."]);
+  }
+
+  if (a.tried === "refused") items.push(["info", "Learn from your last application", "We'll review what happened so it doesn't repeat."]);
+  if (a.tried === "lived") items.push(["info", "Your past stay in Japan", "Tell us about it. We'll check how it affects your new application."]);
+
+  return items;
+}
+
+function nextSteps(t, target) {
+  const a = state.answers;
+  const steps = [];
+  if (a.passport === "none" || a.passport === "expired") steps.push(["Book a DFA passport appointment", "Do this first. It's the step most likely to cause delays."]);
+  if (a.education === "oldhs") steps.push(["Complete your 12 years of schooling", "Ask us about the fastest college or TESDA options."]);
+  if (a.japanese === "none") steps.push(["Start learning hiragana this week", `Then build up to ${HOURS_LABEL[a.hours]} a day${a.status === "fulltime" ? " on evenings and weekends" : ""}.`]);
+  else if (a.japanese === "basics") steps.push(["Keep studying toward N5", `${HOURS_LABEL[a.hours]} a day gets you there by ${monthYear(t.ready)}.`]);
+  if (a.sponsor === "unsure" || a.funds !== "both") steps.push(["Talk with your family about sponsorship", "Agree on who will sponsor you and start building bank savings."]);
+  steps.push(["Book your free consultation", `We'll match you with schools and lock in your ${target.label} plan.`]);
+  return steps;
+}
+
+function timelineHtml(t, target) {
+  const a = state.answers;
+  return `
     <ul class="timeline">
       <li><div class="tl-date">Today</div><div class="tl-text">Start your Japanese lessons</div></li>
       <li><div class="tl-date">${t.studyMonths ? monthYear(t.ready) : "Done"}</div>
@@ -725,11 +867,17 @@ function insightTimeline() {
           ${t.studyMonths ? `<div class="tl-sub">~${t.need} study hours, about ${t.studyMonths} months</div>` : ""}</li>
       <li><div class="tl-date">${monthYear(addMonths(target.date, -APPLY_LEAD_MONTHS))}</div>
           <div class="tl-text">Submit your COE application</div>
-          <div class="tl-sub">The school files it with Japanese Immigration for you</div></li>
+          <div class="tl-sub">Your school files it with Japanese Immigration</div></li>
       <li><div class="tl-date">${target.label}</div>
           <div class="tl-text">Fly to Japan ✈️</div>
           <div class="tl-sub">${GOAL_NOTES[a.goal] || GOAL_NOTES.unsure}</div></li>
     </ul>`;
+}
+
+function checklistHtml(items) {
+  const icon = { ok: "✓", todo: "!", info: "i" };
+  return `<ul class="checklist">${items.map(([s, title, desc]) => `
+    <li><span class="status ${s}">${icon[s]}</span><div><b>${title}</b><span class="desc">${desc}</span></div></li>`).join("")}</ul>`;
 }
 
 /* =========================================================
@@ -812,7 +960,7 @@ function animateRing() {
   };
   requestAnimationFrame(tick);
 }
-function money(n) { return `${CONFIG.currency}${n.toLocaleString()}`; }
+function firstNameOf(name) { return (name || "").trim().split(/\s+/)[0]; }
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
@@ -826,16 +974,15 @@ $("#back").addEventListener("click", back);
 $("#restart").addEventListener("click", restart);
 
 document.addEventListener("keydown", e => {
-  if (document.querySelector(".backdrop")) return;
   if (e.target.matches("input")) { if (e.key === "Enter") $("#next")?.click(); return; }
-  if (e.target.matches("button") && (e.key === "Enter" || e.key === " ")) return; // native click handles it
+  if (e.target.matches("button, a") && (e.key === "Enter" || e.key === " ")) return; // native click handles it
   const n = parseInt(e.key, 10);
   if (n >= 1 && n <= 9) screen.querySelectorAll(".option")[n - 1]?.click();
   else if (e.key === "Enter") $("#next")?.click();
   else if (e.key === "Backspace" && !$("#back").hidden) back();
 });
 
-if (state.i >= STEPS.length || state.i < 0) state = freshState();
+if (!(state.i >= 0 && state.i < STEPS.length)) state = freshState();
 render();
 </script>
 </body>
