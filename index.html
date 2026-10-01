@@ -236,7 +236,7 @@
 const CONFIG = {
   brand: "Saiko Gakushu",
   tagline: "Study in Japan",
-  messengerUrl: "https://www.facebook.com/saikogakushuilc", // e.g. "https://m.me/yourpage". Shows a "Message us" button when set
+  messengerUrl: "https://m.me/saikogakushuilc", // e.g. "https://m.me/yourpage". Shows a "Message us" button when set
   sheetUrl: "https://script.google.com/macros/s/AKfycbwUiwIGPWVhcqPS8cXEyNsSsJCopQrM1ubOdOZCtmSqgCwFz6vw-YOkTZbfmiJuQsG1/exec",     // Google Apps Script web app URL (ends in /exec). See google-sheet/SETUP.md
 };
 
@@ -675,9 +675,9 @@ const RENDERERS = {
         <h2>${eager ? `Let's lock in your ${target.label} plan` : "Have questions? Let's talk, no pressure"}</h2>
         <p>Book a free consultation with a ${CONFIG.brand} counselor. We'll go through your plan, match you with schools, and answer everything you're unsure about.</p>
         <button class="btn primary big" id="next">Book my free consultation</button>
-        ${CONFIG.messengerUrl ? `<a class="btn secondary" href="${CONFIG.messengerUrl}" target="_blank" rel="noopener">Message us on Messenger</a>` : ""}
       </div>`;
     $("#next").addEventListener("click", () => {
+      state.lead.booked = true;
       sendToSheet({ action: "booked", id: state.lead.id });
       next();
     });
@@ -766,7 +766,7 @@ function leadRow() {
     row[s.col] = v == null ? "" : Array.isArray(v) ? v.map(labelOf).join(", ") : labelOf(v);
   });
   row["Source"] = state.source || "";
-  row["Booked consultation"] = "";
+  row["Booked consultation"] = state.lead.booked ? "Yes" : "No";
   return row;
 }
 
