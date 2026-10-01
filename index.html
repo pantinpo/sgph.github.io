@@ -236,7 +236,8 @@
 const CONFIG = {
   brand: "Saiko Gakushu",
   tagline: "Study in Japan",
-  messengerUrl: "", // e.g. "https://m.me/yourpage". Shows a "Message us" button when set
+  messengerUrl: "https://m.me/saikogakushu", // e.g. "https://m.me/yourpage". Shows a "Message us" button when set
+  sheetUrl: "https://script.google.com/macros/s/AKfycbwUiwIGPWVhcqPS8cXEyNsSsJCopQrM1ubOdOZCtmSqgCwFz6vw-YOkTZbfmiJuQsG1/exec",     // Google Apps Script web app URL (ends in /exec). See google-sheet/SETUP.md
 };
 
 /* =========================================================
@@ -314,7 +315,8 @@ const WORRY_ANSWERS = {
   family:   ["🏠", "Being away from family", "Most students video call home every day, and you'll meet other Filipino students at school."],
 };
 
-const SPONSOR_NAME = { parents: "your parents", ofw: "your relative abroad", japan: "your relative in Japan" };
+const TEMPERATURE = { now: "🔥 Hot", "1mo": "🔥 Hot", "3mo": "Warm", exploring: "Cold" };
+const SPONSOR_NAME ={ parents: "your parents", ofw: "your relative abroad", japan: "your relative in Japan" };
 const HOURS_LABEL = { lt1: "under 1 hour", "1-2": "1–2 hours", "2-4": "2–4 hours", "4+": "4+ hours" };
 const JP_FROM = { none: "zero", basics: "the basics", n5: "N5", n4: "N4+" };
 
@@ -329,7 +331,7 @@ const APPLY_LEAD_MONTHS = 5; // COE applications usually close ~5 months before 
 const STEPS = [
   { type: "intro" },
   {
-    type: "question", id: "status", title: "First, what are you doing right now?",
+    type: "question", id: "status", col: "Current status", title: "First, what are you doing right now?",
     options: [
       { v: "student", label: "I'm a student", icon: "📖" },
       { v: "fulltime", label: "Working full-time", icon: "💼" },
@@ -338,7 +340,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "age", title: "How old are you?",
+    type: "question", id: "age", col: "Age", title: "How old are you?",
     options: [
       { v: "18-24", label: "18–24", icon: "🧑‍🎓" },
       { v: "25-29", label: "25–29", icon: "🧑" },
@@ -347,7 +349,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "education", title: "What's the highest level of school you've finished?",
+    type: "question", id: "education", col: "Education", title: "What's the highest level of school you've finished?",
     subtitle: "Japanese language schools usually require 12 years of schooling.",
     options: [
       { v: "k12", label: "Senior High School graduate", sub: "Finished Grade 12 (K-12)", icon: "🏫" },
@@ -358,7 +360,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "willing", when: a => a.education === "oldhs",
+    type: "question", id: "willing", col: "Willing to add units", when: a => a.education === "oldhs",
     title: "Would you be willing to take extra units to complete 12 years of schooling?",
     subtitle: "Many applicants do this through a short college or TESDA program.",
     options: [
@@ -368,7 +370,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "japanese", title: "How much Japanese do you know?",
+    type: "question", id: "japanese", col: "Japanese level", title: "How much Japanese do you know?",
     options: [
       { v: "none", label: "None yet", sub: "Starting from zero", icon: "🌱" },
       { v: "basics", label: "The basics", sub: "I can read hiragana / katakana", icon: "あ" },
@@ -378,7 +380,7 @@ const STEPS = [
   },
   { type: "insight", render: insightFit },
   {
-    type: "question", id: "motivation", title: "What's drawing you to Japan?",
+    type: "question", id: "motivation", col: "Motivation", title: "What's drawing you to Japan?",
     options: [
       { v: "career", label: "A better career and salary", icon: "📈" },
       { v: "family", label: "Helping my family", icon: "👨‍👩‍👧" },
@@ -387,7 +389,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "vision", title: "Picture yourself one year after arriving in Japan. What would make you proudest?",
+    type: "question", id: "vision", col: "Proudest in 1 year", title: "Picture yourself one year after arriving in Japan. What would make you proudest?",
     options: [
       { v: "japanese", label: "Speaking Japanese confidently", icon: "🗣️" },
       { v: "money", label: "Sending money home to my family", icon: "💌" },
@@ -396,7 +398,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "goal", title: "And after language school, what's next for you?",
+    type: "question", id: "goal", col: "Goal after school", title: "And after language school, what's next for you?",
     options: [
       { v: "career", label: "Work full-time in Japan", sub: "e.g. Specified Skilled Worker visa", icon: "💼" },
       { v: "college", label: "Continue to a Japanese college or university", icon: "🏯" },
@@ -406,7 +408,7 @@ const STEPS = [
   },
   { type: "insight", render: insightMotivation },
   {
-    type: "question", id: "hours", title: "How many hours a day can you spend learning Japanese?",
+    type: "question", id: "hours", col: "Study hours/day", title: "How many hours a day can you spend learning Japanese?",
     subtitle: a => a.status === "fulltime" ? "Be realistic. Even 1 hour after work adds up fast." : "",
     options: [
       { v: "lt1", label: "Less than 1 hour", icon: "⏱️" },
@@ -416,7 +418,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "intake", title: "When would you like to leave for Japan?",
+    type: "question", id: "intake", col: "Preferred intake", title: "When would you like to leave for Japan?",
     subtitle: "Language schools start in January, April, July and October.",
     options: () => [
       ...upcomingIntakes(4).map(x => ({ v: x.v, label: x.label, icon: INTAKE_ICON[x.date.getMonth()] })),
@@ -425,7 +427,7 @@ const STEPS = [
   },
   { type: "insight", render: insightTimeline },
   {
-    type: "question", id: "passport", title: "Do you have a valid Philippine passport?",
+    type: "question", id: "passport", col: "Passport", title: "Do you have a valid Philippine passport?",
     options: [
       { v: "yes", label: "Yes, it's valid", icon: "🛂" },
       { v: "expired", label: "Yes, but it's expired or expiring soon", icon: "⌛" },
@@ -434,7 +436,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "tried", title: "Have you tried to go to Japan before?",
+    type: "question", id: "tried", col: "Tried before", title: "Have you tried to go to Japan before?",
     options: [
       { v: "first", label: "No, this is my first time", icon: "✨" },
       { v: "refused", label: "I applied before, but it didn't push through", icon: "🔁" },
@@ -443,7 +445,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "sponsor", title: "Who will support your studies financially?",
+    type: "question", id: "sponsor", col: "Sponsor", title: "Who will support your studies financially?",
     subtitle: "Immigration asks for proof that someone can cover tuition and living costs.",
     options: [
       { v: "parents", label: "My parents", icon: "👨‍👩‍👧" },
@@ -454,7 +456,7 @@ const STEPS = [
     ],
   },
   {
-    type: "question", id: "funds", when: a => a.sponsor && a.sponsor !== "unsure",
+    type: "question", id: "funds", col: "Sponsor finances", when: a => a.sponsor && a.sponsor !== "unsure",
     title: a => a.sponsor === "self"
       ? "Do you have savings and a steady income you can show?"
       : `${a.sponsor === "parents" ? "Do" : "Does"} ${SPONSOR_NAME[a.sponsor]} have savings and a steady income they can show?`,
@@ -468,12 +470,12 @@ const STEPS = [
   },
   { type: "insight", render: insightReadiness },
   {
-    type: "question", id: "worries", multi: true, title: "What worries you most?",
+    type: "question", id: "worries", col: "Worries", multi: true, title: "What worries you most?",
     subtitle: "Pick all that apply. We'll answer these in your plan.",
     options: Object.entries(WORRY_ANSWERS).map(([v, [icon, label]]) => ({ v, label, icon })),
   },
   {
-    type: "question", id: "commitment",
+    type: "question", id: "commitment", col: "Ready to start",
     title: a => `If we find a school that fits you, how soon could you start preparing for ${targetIntake(timeline()).label}?`,
     options: [
       { v: "now", label: "Right away", sub: "I'm ready to start", icon: "🚀" },
@@ -523,6 +525,7 @@ function back() {
 function restart() {
   localStorage.removeItem(STORAGE_KEY);
   state = freshState();
+  captureSource();
   render();
 }
 
@@ -674,7 +677,10 @@ const RENDERERS = {
         <button class="btn primary big" id="next">Book my free consultation</button>
         ${CONFIG.messengerUrl ? `<a class="btn secondary" href="${CONFIG.messengerUrl}" target="_blank" rel="noopener">Message us on Messenger</a>` : ""}
       </div>`;
-    $("#next").addEventListener("click", next);
+    $("#next").addEventListener("click", () => {
+      sendToSheet({ action: "booked", id: state.lead.id });
+      next();
+    });
   },
 
   success() {
@@ -727,9 +733,77 @@ function submitForm() {
     "f-consent": consent,
   };
   Object.entries(checks).forEach(([id, ok]) => $("#" + id).classList.toggle("invalid", !ok));
-  state.lead = { name, email, mobile, consent };
+  state.lead = { ...state.lead, name, email, mobile, consent };
   saveState();
-  if (Object.values(checks).every(Boolean)) next();
+  if (!Object.values(checks).every(Boolean)) return;
+  state.lead.id ||= makeId();
+  sendToSheet({ action: "lead", row: leadRow() });
+  next();
+}
+
+/* =========================================================
+   Saving leads to Google Sheets
+   ========================================================= */
+function leadRow() {
+  const a = state.answers;
+  const t = timeline();
+  const items = readinessItems();
+  const row = {
+    "Lead ID": state.lead.id,
+    "Submitted": "", // filled in by the sheet
+    "Temperature": TEMPERATURE[a.commitment] || "",
+    "Name": state.lead.name,
+    "Email": state.lead.email,
+    "Mobile": state.lead.mobile,
+    "Match score": `${fitScore(["age", "education", "japanese", "hours", "sponsor"])}%`,
+    "Target intake": targetIntake(t).label,
+    "Ready steps": `${items.filter(([s]) => s === "ok").length} of ${items.length}`,
+    "To-do": items.filter(([s]) => s !== "ok").map(([, title]) => title).join(", "),
+  };
+  STEPS.filter(s => s.type === "question").forEach(s => {
+    const v = isActive(s) ? a[s.id] : null;
+    const labelOf = x => resolve(s.options).find(o => o.v === x)?.label || x;
+    row[s.col] = v == null ? "" : Array.isArray(v) ? v.map(labelOf).join(", ") : labelOf(v);
+  });
+  row["Source"] = state.source || "";
+  row["Booked consultation"] = "";
+  return row;
+}
+
+const PENDING_KEY = "jp-pathway-pending";
+
+function sendToSheet(payload) {
+  if (!CONFIG.sheetUrl) return;
+  fetch(CONFIG.sheetUrl, {
+    method: "POST",
+    mode: "no-cors", // Apps Script doesn't send CORS headers; the request still goes through
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload),
+  }).catch(() => {
+    // Offline or blocked: keep it and retry on the next visit
+    const pending = JSON.parse(localStorage.getItem(PENDING_KEY) || "[]");
+    pending.push(payload);
+    localStorage.setItem(PENDING_KEY, JSON.stringify(pending));
+  });
+}
+
+function flushPending() {
+  const pending = JSON.parse(localStorage.getItem(PENDING_KEY) || "[]");
+  if (!pending.length || !CONFIG.sheetUrl) return;
+  localStorage.removeItem(PENDING_KEY);
+  pending.forEach(sendToSheet);
+}
+
+function captureSource() {
+  if (state.source) return;
+  const q = new URLSearchParams(location.search);
+  const parts = ["utm_source", "utm_medium", "utm_campaign"].map(k => q.get(k)).filter(Boolean);
+  if (!parts.length && document.referrer) parts.push(new URL(document.referrer).hostname);
+  state.source = parts.join(" / ") || "direct";
+}
+
+function makeId() {
+  return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
 /* =========================================================
@@ -983,6 +1057,8 @@ document.addEventListener("keydown", e => {
 });
 
 if (!(state.i >= 0 && state.i < STEPS.length)) state = freshState();
+captureSource();
+flushPending();
 render();
 </script>
 </body>
