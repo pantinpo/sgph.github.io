@@ -203,7 +203,14 @@
   .fine { text-align: center; font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.5; }
 
   footer { text-align: center; font-size: 12px; color: var(--muted); padding: 16px; }
-  footer button { background: none; border: none; color: var(--muted); text-decoration: underline; cursor: pointer; font: inherit; }
+  footer { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  #restart {
+    background: #dc2626; color: #fff; border: none; border-radius: 99px;
+    padding: 9px 18px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, .3); transition: background .15s, transform .15s;
+  }
+  #restart:hover { background: #b91c1c; transform: translateY(-1px); }
+  #restart:focus-visible { outline: 3px solid #fca5a5; outline-offset: 2px; }
 
   @media (max-width: 420px) {
     .q-title { font-size: 22px; }
@@ -227,7 +234,7 @@
 
 <main><div id="screen"></div></main>
 
-<footer><span id="copy"></span> · <button id="restart">Start over</button></footer>
+<footer><span id="copy"></span><button id="restart">↺ Start over</button></footer>
 
 <script>
 /* =========================================================
@@ -523,6 +530,7 @@ function back() {
   render();
 }
 function restart() {
+  if (state.i > 0 && !confirm("Start over? Your answers will be cleared.")) return;
   localStorage.removeItem(STORAGE_KEY);
   state = freshState();
   captureSource();
